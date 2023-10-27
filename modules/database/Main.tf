@@ -8,13 +8,13 @@ resource "aws_security_group" "rds-postgres-sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    cidr_blocks   = ["0.0.0.0/0"] //LIberando todos os IPs para permitir o teste mas o correto seria liberar apenas o IP de quem for utilizar
+    cidr_blocks = ["0.0.0.0/0"] //LIberando todos os IPs para permitir o teste mas o correto seria liberar apenas o IP de quem for utilizar
   }
   egress {
-    from_port = "0"
-    to_port   = "0"
-    protocol  = "-1"
-    cidr_blocks   = ["0.0.0.0/0"]
+    from_port   = "0"
+    to_port     = "0"
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
     Name        = "Security-group-RDS"
@@ -25,6 +25,7 @@ resource "aws_security_group" "rds-postgres-sg" {
 resource "aws_db_instance" "postgresql_db" {
   allocated_storage      = 20
   db_name                = "TechChallenge"
+  identifier             = "TechChallenge"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = "db.t4g.micro"
