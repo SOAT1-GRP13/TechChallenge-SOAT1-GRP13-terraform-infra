@@ -3,7 +3,7 @@ Variables used across all modules
 ======*/
 locals {
   dev_availability_zones = ["${var.region}a", "${var.region}b"]
-  environment = "dev"
+  environment            = "dev"
 }
 
 module "networking" {
@@ -21,11 +21,11 @@ module "databases" {
   source = "./modules/database"
 
   availability_zone = local.dev_availability_zones[0]
-  subnet_group_name  = module.networking.db_subnet_group_name
-  db_username        = var.db_username
-  db_password        = var.db_password
-  environment = local.environment
-  vpc_id = module.networking.vpc_id
+  subnet_group_name = module.networking.db_subnet_group_name
+  db_username       = var.db_username
+  db_password       = var.db_password
+  environment       = local.environment
+  vpc_id            = module.networking.vpc_id
 }
 
 module "s3" {
