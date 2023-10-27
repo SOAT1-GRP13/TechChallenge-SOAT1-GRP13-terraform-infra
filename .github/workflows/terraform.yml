@@ -1,17 +1,16 @@
 name: "Terraform"
 
 on:
-  pull_request:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
-  terraform:
-    name: "Terraform"
+  terraform setup:
+    name: "Terraform setup"
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -36,7 +35,7 @@ jobs:
       - name: Terraform Format
         id: fmt
         run: terraform fmt
-      
+
       - name: Terraform Format check
         id: fmtcheck
         run: terraform fmt -check
@@ -49,8 +48,15 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
+  terraform_plan:
+    name: "terraform plan"
+    permissions:
+      pull-requests: write
+
+    steps:
       - name: Terraform Plan
         id: plan
+        if: github.event_name == 'pull_request'
         run: terraform plan -no-color -input=false
         continue-on-error: true
 
@@ -87,3 +93,11 @@ jobs:
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
+
+  terraform_apply:
+    name: "Terraform apply"
+
+    steps:
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
