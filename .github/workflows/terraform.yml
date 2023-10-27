@@ -28,6 +28,13 @@ jobs:
 
       - name: Terraform Init
         id: init
+        env:
+          access_key: ${{secrets.ACCESS_KEY}}
+          secret_key: ${{secrets.SECRET_KEY}}
+          db_username: ${{secrets.DB_USERNAME}}
+          db_password: ${{secrets.DB_PASSWORD}}
+          environment: $ENVIRONMENT
+          region: $REGION
         run: terraform init
       
       - name: Terraform Validate
@@ -37,8 +44,6 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        run: 
-          terraform plan -no-color -input=false
         env:
           access_key: ${{secrets.ACCESS_KEY}}
           secret_key: ${{secrets.SECRET_KEY}}
@@ -46,6 +51,8 @@ jobs:
           db_password: ${{secrets.DB_PASSWORD}}
           environment: $ENVIRONMENT
           region: $REGION
+        run: 
+          terraform plan -no-color -input=false
         continue-on-error: true
 
       - name: Update Pull Request
