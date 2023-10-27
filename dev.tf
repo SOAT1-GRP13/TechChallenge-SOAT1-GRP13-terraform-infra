@@ -6,6 +6,17 @@ locals {
   environment            = "dev"
 }
 
+//*=======Usar somente para pipeline"==========*/
+terraform {
+  backend "s3" {
+    encrypt        = true
+    bucket         = "techchallenge-soat1-grp13-state"
+    key            = "tfstate-s3-bucket"
+    region         = "us-west-2"
+    dynamodb_table = "soat1-grp13-dynamo-lock"
+  }
+}
+
 module "networking" {
   source = "./modules/networking"
 
