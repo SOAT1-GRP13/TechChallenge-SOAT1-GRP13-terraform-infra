@@ -36,7 +36,7 @@ jobs:
       - name: Terraform Format
         id: fmt
         run: terraform fmt
-      
+
       - name: Terraform Format check
         id: fmtcheck
         run: terraform fmt -check
