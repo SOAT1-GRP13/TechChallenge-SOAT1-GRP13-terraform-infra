@@ -20,7 +20,18 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.6.2
-          # cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+      - name: Setup terraform variables
+        id: vars
+        run: |-
+          cat > pipeline.auto.tfvars <<EOF
+          access_key="${{secrets.ACCESS_KEY}}"
+          secret_key= "${{secrets.SECRET_KEY}}"
+          db_username="${{secrets.DB_USERNAME}}"
+          db_password="${{secrets.DB_PASSWORD}}"
+          environment="${{vars.ENVIRONMENT}}"
+          region="${{vars.REGION}}"
+          EOF
 
       - name: Terraform Format
         id: fmt
@@ -28,15 +39,8 @@ jobs:
 
       - name: Terraform Init
         id: init
-        env:
-          access_key: ${{secrets.ACCESS_KEY}}
-          secret_key: ${{secrets.SECRET_KEY}}
-          db_username: ${{secrets.DB_USERNAME}}
-          db_password: ${{secrets.DB_PASSWORD}}
-          environment: $ENVIRONMENT
-          region: $REGION
         run: terraform init
-      
+
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
@@ -44,15 +48,7 @@ jobs:
       - name: Terraform Plan
         id: plan
         if: github.event_name == 'pull_request'
-        env:
-          access_key: ${{secrets.ACCESS_KEY}}
-          secret_key: ${{secrets.SECRET_KEY}}
-          db_username: ${{secrets.DB_USERNAME}}
-          db_password: ${{secrets.DB_PASSWORD}}
-          environment: $ENVIRONMENT
-          region: $REGION
-        run: 
-          terraform plan -no-color -input=false
+        run: terraform plan -no-color
         continue-on-error: true
 
       - name: Update Pull Request
