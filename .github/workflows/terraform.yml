@@ -35,11 +35,11 @@ jobs:
 
       - name: Terraform Format
         id: fmt
-        run: terraform fmt -check
+        run: terraform fmt
       
       - name: Terraform Format check
         id: fmt
-        run: terraform fmt
+        run: terraform fmt -check
 
       - name: Terraform Init
         id: init
