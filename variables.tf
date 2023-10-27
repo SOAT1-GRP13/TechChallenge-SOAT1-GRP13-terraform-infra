@@ -14,9 +14,9 @@ variable "secret_key" {
   description = "AWS secret key to create resources"
 }
 
-variable "profile" {
-  description = "AWS profile to create resources used locally"
-}
+# variable "profile" {
+#   description = "AWS profile to create resources used locally"
+# }
 
 //Networking
 
