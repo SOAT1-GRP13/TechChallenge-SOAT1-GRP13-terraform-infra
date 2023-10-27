@@ -9,9 +9,9 @@ locals {
 module "networking" {
   source = "./modules/networking"
 
-  region               = var.region
-  environment          = var.environment
-  availability_zones   = local.dev_availability_zones
+  region             = var.region
+  environment        = var.environment
+  availability_zones = local.dev_availability_zones
 }
 
 module "databases" {
