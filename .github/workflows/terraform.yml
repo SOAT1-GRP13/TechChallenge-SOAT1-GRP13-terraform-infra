@@ -50,19 +50,19 @@ jobs:
 
   terraform_plan:
     name: "terraform plan"
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
     permissions:
       pull-requests: write
 
     steps:
       - name: Terraform Plan
         id: plan
-        if: github.event_name == 'pull_request'
         run: terraform plan -no-color -input=false
         continue-on-error: true
 
       - name: Update Pull Request
         uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
         env:
           PLAN: ${{ steps.plan.outputs.stdout }}
         with:
@@ -96,8 +96,9 @@ jobs:
 
   terraform_apply:
     name: "Terraform apply"
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
 
     steps:
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve -input=false
