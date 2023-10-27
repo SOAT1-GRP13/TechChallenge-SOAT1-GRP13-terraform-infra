@@ -6,6 +6,18 @@ variable "environment" {
   description = "The Deployment environment"
 }
 
+variable "access_key" {
+  description = "AWS access key to create resources"
+}
+
+variable "secret_key" {
+  description = "AWS secret key to create resources"
+}
+
+variable "profile" {
+  description = "AWS profile to create resources used locally"
+}
+
 //Networking
 variable "vpc_cidr" {
   description = "The CIDR block of the vpc"
@@ -20,10 +32,6 @@ variable "private_subnets_cidr" {
 }
 variable "availability_zones" {
   description = "availability zone to the subnets"
-}
-
-variable "profile" {
-  description = "AWS profile to create resources"
 }
 
 variable "db_username" {
