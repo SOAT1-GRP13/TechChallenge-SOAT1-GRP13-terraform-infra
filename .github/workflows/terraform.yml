@@ -44,8 +44,8 @@ jobs:
           secret_key: ${{secrets.SECRET_KEY}}
           db_username: ${{secrets.DB_USERNAME}}
           db_password: ${{secrets.DB_PASSWORD}}
-          environment: ${{var.ENVIROMENT}}
-          region: $${{var.REGION}}
+          environment: $ENVIRONMENT
+          region: $REGION
         continue-on-error: true
 
       - name: Update Pull Request
