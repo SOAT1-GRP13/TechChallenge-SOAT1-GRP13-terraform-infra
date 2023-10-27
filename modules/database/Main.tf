@@ -25,7 +25,7 @@ resource "aws_security_group" "rds-postgres-sg" {
 resource "aws_db_instance" "postgresql_db" {
   allocated_storage      = 20
   db_name                = "TechChallenge"
-  identifier             = "TechChallenge"
+  identifier             = "techchallenge"
   engine                 = "postgres"
   engine_version         = "15.4"
   instance_class         = "db.t4g.micro"
