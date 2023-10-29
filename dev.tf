@@ -41,3 +41,7 @@ module "s3" {
 
   environment = local.environment
 }
+
+module "secrets" {
+  source = "./modules/secrets"
+}
