@@ -3,7 +3,7 @@
 ################################################################################
 
 resource "aws_ecs_cluster" "this" {
-  name  = "soat1-grp13-tech-challenge"
+  name = "soat1-grp13-tech-challenge"
 }
 
 ################################################################################
@@ -47,15 +47,11 @@ data "aws_iam_policy_document" "task_exec_assume" {
 }
 
 resource "aws_iam_role" "task_exec" {
-  name = "taskRole"
+  name               = "taskRole"
   assume_role_policy = data.aws_iam_policy_document.task_exec_assume.json
 
-}
 
-# resource "aws_iam_role_policy_attachment" "task_exec_additional" {
-#   role       = aws_iam_role.task_exec.name
-#   policy_arn = each.value
-# }
+}
 
 data "aws_iam_policy_document" "task_exec" {
   # Pulled from AmazonECSTaskExecutionRolePolicy
@@ -75,24 +71,40 @@ data "aws_iam_policy_document" "task_exec" {
   }
 }
 
+resource "aws_iam_policy" "policy" {
+  name   = "getSecretELog"
+  policy = data.aws_iam_policy_document.task_exec.json
+}
+
+resource "aws_iam_role_policy_attachment" "task_exec_additional" {
+  role       = aws_iam_role.task_exec.name
+  policy_arn = aws_iam_policy.policy.arn
+}
+
 ################################################################################
 # Task Definition
 ################################################################################
 
 resource "aws_ecs_task_definition" "this" {
-	container_definitions = jsonencode([{
-		essential = true,
-		image = "christiandmelo/tech-challenge-soat1-grp13:latest",
-		name = "soat1-grp13-api",
-		portMappings = [{ containerPort = 80 }],
-	}])
-	cpu = 256
-	execution_role_arn = aws_iam_role.task_exec.arn
-  task_role_arn = aws_iam_role.task_exec.arn
-	family = "soat1-grp13-api"
-	memory = 512
-	network_mode = "awsvpc"
-	requires_compatibilities = ["FARGATE"]
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13:latest",
+    name      = "soat1-grp13-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "soat1-grp13-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
 }
 
 ################################################################################
@@ -100,28 +112,28 @@ resource "aws_ecs_task_definition" "this" {
 ################################################################################
 
 resource "aws_ecs_service" "this" {
-	cluster = aws_ecs_cluster.this.id
-	desired_count = 1
-	launch_type = "FARGATE"
-	name = "soat1-grp13-service"
-	task_definition = aws_ecs_task_definition.this.arn
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "soat1-grp13-service"
+  task_definition = aws_ecs_task_definition.this.arn
 
-	lifecycle {
-		ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
-	}
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
 
-	load_balancer {
-		container_name = "soat1-grp13-api"
-		container_port = 80
-		target_group_arn = "${var.lb_target_group_arn}"
-	}
+  load_balancer {
+    container_name   = "soat1-grp13-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_arn
+  }
 
-	network_configuration {
-		security_groups = [
+  network_configuration {
+    security_groups = [
       "${var.lb_engress_id}",
       "${var.lb_ingress_id}"
-		]
-		subnets =  "${var.public_subnets_id}"
+    ]
+    subnets          = var.public_subnets_id
     assign_public_ip = true
-	}
+  }
 }
