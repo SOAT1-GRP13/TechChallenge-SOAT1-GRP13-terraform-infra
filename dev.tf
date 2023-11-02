@@ -45,3 +45,20 @@ module "s3" {
 module "secrets" {
   source = "./modules/secrets"
 }
+
+module "alb" {
+  source = "./modules/alb"
+
+  vpc_id            = module.networking.vpc_id
+  public_subnets_id = module.networking.public_subnet_id
+}
+
+module "ecs" {
+  source = "./modules/ecs"
+
+  public_subnets_id     = module.networking.public_subnet_id
+  task_exec_secret_arns = module.secrets.aws_secretsmanager_secret_arn
+  lb_engress_id         = module.alb.egress_all_id
+  lb_ingress_id         = module.alb.ingress_api_id
+  lb_target_group_arn   = module.alb.lb_target_group_arn
+}
