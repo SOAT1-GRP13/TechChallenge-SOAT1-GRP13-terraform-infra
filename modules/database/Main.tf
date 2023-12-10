@@ -1,20 +1,15 @@
 /*=============RDS=================*/
+
 resource "aws_security_group" "rds-postgres-sg" {
   name        = "rds-postgres-sg-${var.environment}"
   description = "Security group for RDS Postgres"
   vpc_id      = var.vpc_id
   ingress {
-    description = "Postgres port"
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] //LIberando todos os IPs para permitir o teste mas o correto seria liberar apenas o IP de quem for utilizar
-  }
-  egress {
-    from_port   = "0"
-    to_port     = "0"
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description     = "Postgres port"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = ["${var.bastion_security_group}", "${var.ecs_security_group}"]
   }
   tags = {
     Name        = "Security-group-RDS"
