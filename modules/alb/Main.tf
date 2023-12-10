@@ -49,7 +49,7 @@ resource "aws_security_group" "ingress_api" {
 }
 
 resource "aws_lb" "this" {
-  name               = "techchallenge_alb"
+  name               = "techchallengeasoat1grp13alb"
   load_balancer_type = "application"
 
   security_groups = [
