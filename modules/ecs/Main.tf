@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "task_exec" {
   statement {
     sid       = "GetSecrets"
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [var.task_exec_secret_arns]
+    resources = ["*"]
   }
 }
 

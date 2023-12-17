@@ -26,3 +26,8 @@ output "listener_arn" {
   description = "arn of alb listener"
   value = aws_lb_listener.this.arn
 }
+
+output "dns_name" {
+  description = "The DNS name of the load balancer"
+  value       = try(aws_lb.this.dns_name, null)
+}

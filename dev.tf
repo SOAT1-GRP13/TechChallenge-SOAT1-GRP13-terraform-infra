@@ -72,12 +72,32 @@ module "apigw" {
 module "ecs" {
   source = "./modules/ecs"
 
-  privates_subnets_id           = module.networking.private_subnet_id
-  task_exec_secret_arns         = module.secrets.aws_secretsmanager_secret_arn
+  privates_subnets_id = module.networking.private_subnet_id
+  # task_exec_secret_arns         = module.secrets.aws_secretsmanager_secret_arn
   lb_engress_id                 = module.alb.egress_all_id
   lb_ingress_id                 = module.alb.ingress_api_id
   lb_target_group_pagamento_arn = module.alb.lb_target_group_pagamento_arn
   lb_target_group_pedido_arn    = module.alb.lb_target_group_pedido_arn
   lb_target_group_producao_arn  = module.alb.lb_target_group_producao_arn
   vpc_id                        = module.networking.vpc_id
+}
+
+output "alb-dns" {
+  description = "DNS do load balance interno"
+  value       = module.alb.dns_name
+}
+
+output "rds-address" {
+  description = "caminha do RDS"
+  value       = module.databases.db_instance_address
+}
+
+output "api-gateway-invoke" {
+  description = "invoke url to default stage"
+  value       = module.apigw.invoke_url
+}
+
+output "api-endpoint" {
+  description = "api gateway endpoint"
+  value       = module.apigw.apigw_endpoint
 }
