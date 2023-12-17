@@ -63,10 +63,16 @@ module "alb" {
   privates_subnets_id = module.networking.private_subnet_id
 }
 
+module "lambda" {
+  source = "./modules/lambda"
+}
+
 module "apigw" {
   source              = "./modules/apigw"
   privates_subnets_id = module.networking.private_subnet_id
   listener_arn        = module.alb.listener_arn
+  lambda_invoke_arn   = module.lambda.lambda_invoke_arn
+  lambda_name         = module.lambda.lambda_name
 }
 
 module "ecs" {
