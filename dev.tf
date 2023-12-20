@@ -73,6 +73,8 @@ module "apigw" {
   listener_arn        = module.alb.listener_arn
   lambda_invoke_arn   = module.lambda.lambda_invoke_arn
   lambda_name         = module.lambda.lambda_name
+  lb_engress_id       = module.alb.egress_all_id
+  lb_ingress_id       = module.alb.ingress_api_id
 }
 
 module "ecs" {
@@ -85,6 +87,7 @@ module "ecs" {
   lb_target_group_pagamento_arn = module.alb.lb_target_group_pagamento_arn
   lb_target_group_pedido_arn    = module.alb.lb_target_group_pedido_arn
   lb_target_group_producao_arn  = module.alb.lb_target_group_producao_arn
+  lb_target_group_produto_arn   = module.alb.lb_target_group_produto_arn
   vpc_id                        = module.networking.vpc_id
 }
 

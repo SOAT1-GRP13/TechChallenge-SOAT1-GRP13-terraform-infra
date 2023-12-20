@@ -3,15 +3,19 @@
 # }
 
 variable "lb_target_group_pedido_arn" {
-  description = "The ID of the security group"
+  description = "arn pedido target group"
 }
 
 variable "lb_target_group_pagamento_arn" {
-  description = "The ID of the security group"
+  description = "arn pagamento target group"
 }
 
 variable "lb_target_group_producao_arn" {
-  description = "The ID of the security group"
+  description = "arn producao target group"
+}
+
+variable "lb_target_group_produto_arn" {
+  description = "arn produto target group"
 }
 
 variable "lb_engress_id" {

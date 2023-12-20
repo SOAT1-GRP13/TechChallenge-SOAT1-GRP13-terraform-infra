@@ -3,7 +3,10 @@
 ################################################################################
 resource "aws_apigatewayv2_vpc_link" "vpclink_apigw_to_alb" {
   name               = "vpclink_apigw_to_alb"
-  security_group_ids = []
+  security_group_ids = [      
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}"
+      ]
   subnet_ids         = var.privates_subnets_id
 }
 
@@ -56,12 +59,51 @@ resource "aws_lambda_permission" "my_authorizer_lambda_permission" {
 }
 
 
-# API GW route with ANY method
-resource "aws_apigatewayv2_route" "apigw_route" {
+################################################################################
+# ROUTES
+################################################################################
+
+resource "aws_apigatewayv2_route" "catalogo_route" {
   api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
   authorizer_id      = aws_apigatewayv2_authorizer.apigw_authorizer.id
   authorization_type = "CUSTOM"
-  route_key          = "ANY /{proxy+}"
+  route_key          = "ANY /Catalogo/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
   depends_on         = [aws_apigatewayv2_integration.apigw_integration, aws_apigatewayv2_authorizer.apigw_authorizer]
+}
+
+
+resource "aws_apigatewayv2_route" "pedido_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorizer_id      = aws_apigatewayv2_authorizer.apigw_authorizer.id
+  authorization_type = "CUSTOM"
+  route_key          = "ANY /pedido/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration, aws_apigatewayv2_authorizer.apigw_authorizer]
+}
+
+resource "aws_apigatewayv2_route" "pagamento_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorizer_id      = aws_apigatewayv2_authorizer.apigw_authorizer.id
+  authorization_type = "CUSTOM"
+  route_key          = "ANY /pagamento/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration, aws_apigatewayv2_authorizer.apigw_authorizer]
+}
+
+resource "aws_apigatewayv2_route" "producao_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorizer_id      = aws_apigatewayv2_authorizer.apigw_authorizer.id
+  authorization_type = "CUSTOM"
+  route_key          = "ANY /producao/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration, aws_apigatewayv2_authorizer.apigw_authorizer]
+}
+
+resource "aws_apigatewayv2_route" "auth_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorization_type = "NONE"
+  route_key          = "ANY /auth/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration]
 }

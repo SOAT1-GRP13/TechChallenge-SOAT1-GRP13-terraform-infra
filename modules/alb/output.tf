@@ -8,18 +8,23 @@ output "ingress_api_id" {
 }
 
 output "lb_target_group_pedido_arn" {
-  description = "The ID of the security group"
+  description = "arn pedito target group"
   value       = aws_lb_target_group.pedido.arn
 }
 
 output "lb_target_group_pagamento_arn" {
-  description = "The ID of the security group"
+  description = "arn pagamento target group"
   value       = aws_lb_target_group.pagamento.arn
 }
 
 output "lb_target_group_producao_arn" {
-  description = "The ID of the security group"
+  description = "arn producao target group"
   value       = aws_lb_target_group.producao.arn
+}
+
+output "lb_target_group_produto_arn" {
+  description = "arn produto target group"
+  value       = aws_lb_target_group.produto.arn
 }
 
 output "listener_arn" {

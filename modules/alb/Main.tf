@@ -51,6 +51,7 @@ resource "aws_security_group" "ingress_api" {
 resource "aws_lb" "this" {
   name               = "techchallengeasoat1grp13alb"
   load_balancer_type = "application"
+  internal           = true
 
   security_groups = [
     aws_security_group.egress_all.id,
@@ -73,6 +74,10 @@ resource "aws_lb_target_group" "pedido" {
   target_type = "ip"
   vpc_id      = var.vpc_id
 
+  health_check {
+    path = "/health"
+  }
+
   depends_on = [aws_lb.this]
 }
 
@@ -83,6 +88,10 @@ resource "aws_lb_target_group" "pagamento" {
   target_type = "ip"
   vpc_id      = var.vpc_id
 
+  health_check {
+    path = "/health"
+  }
+
   depends_on = [aws_lb.this]
 }
 
@@ -92,6 +101,24 @@ resource "aws_lb_target_group" "producao" {
   protocol    = "HTTP"
   target_type = "ip"
   vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/health"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
+resource "aws_lb_target_group" "produto" {
+  name        = "produto-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/health"
+  }
 
   depends_on = [aws_lb.this]
 }
@@ -152,6 +179,21 @@ resource "aws_lb_listener_rule" "producao" {
   condition {
     path_pattern {
       values = ["/producao/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "produto" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.produto.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/catalogo/*"]
     }
   }
 }
