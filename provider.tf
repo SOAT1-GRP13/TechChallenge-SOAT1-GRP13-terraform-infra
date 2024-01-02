@@ -5,7 +5,7 @@ provider "aws" {
 }
 
 
-##usar quando for rodar local
+# #usar quando for rodar local
 # provider "aws" {
 #   region  = var.region
 #   profile = var.profile

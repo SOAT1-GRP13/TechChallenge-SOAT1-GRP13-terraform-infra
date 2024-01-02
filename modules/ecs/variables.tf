@@ -18,6 +18,10 @@ variable "lb_target_group_produto_arn" {
   description = "arn produto target group"
 }
 
+variable "lb_target_group_auth_arn" {
+  description = "arn auth target group"
+}
+
 variable "lb_engress_id" {
   description = "Id of engress sg"
 }

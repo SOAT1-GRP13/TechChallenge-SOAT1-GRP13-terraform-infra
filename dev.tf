@@ -88,6 +88,7 @@ module "ecs" {
   lb_target_group_pedido_arn    = module.alb.lb_target_group_pedido_arn
   lb_target_group_producao_arn  = module.alb.lb_target_group_producao_arn
   lb_target_group_produto_arn   = module.alb.lb_target_group_produto_arn
+  lb_target_group_auth_arn      = module.alb.lb_target_group_auth_arn
   vpc_id                        = module.networking.vpc_id
 }
 
@@ -109,4 +110,9 @@ output "api-gateway-invoke" {
 output "api-endpoint" {
   description = "api gateway endpoint"
   value       = module.apigw.apigw_endpoint
+}
+
+output "ec2-dns" {
+  description = "api gateway endpoint"
+  value       = module.bastion-ec2.ec2_dns
 }

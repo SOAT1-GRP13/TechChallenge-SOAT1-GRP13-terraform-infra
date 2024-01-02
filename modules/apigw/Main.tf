@@ -55,7 +55,7 @@ resource "aws_lambda_permission" "my_authorizer_lambda_permission" {
   action        = "lambda:InvokeFunction"
   function_name = var.lambda_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.apigw_http_endpoint.execution_arn}/*"
+  source_arn    = "${aws_apigatewayv2_api.apigw_http_endpoint.execution_arn}/*/*"
 }
 
 
@@ -67,7 +67,7 @@ resource "aws_apigatewayv2_route" "catalogo_route" {
   api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
   authorizer_id      = aws_apigatewayv2_authorizer.apigw_authorizer.id
   authorization_type = "CUSTOM"
-  route_key          = "ANY /Catalogo/{proxy+}"
+  route_key          = "ANY /produto/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
   depends_on         = [aws_apigatewayv2_integration.apigw_integration, aws_apigatewayv2_authorizer.apigw_authorizer]
 }

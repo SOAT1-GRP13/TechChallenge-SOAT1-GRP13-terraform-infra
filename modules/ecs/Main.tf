@@ -187,6 +187,28 @@ resource "aws_ecs_task_definition" "produto" {
   requires_compatibilities = ["FARGATE"]
 }
 
+resource "aws_ecs_task_definition" "auth" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.6",
+    name      = "auth-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "auth-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
 ################################################################################
 # services
 ################################################################################
@@ -290,6 +312,34 @@ resource "aws_ecs_service" "produto" {
     container_name   = "produto-api"
     container_port   = 80
     target_group_arn = var.lb_target_group_produto_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "auth" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "auth-service"
+  task_definition = aws_ecs_task_definition.auth.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "auth-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_auth_arn
   }
 
   network_configuration {

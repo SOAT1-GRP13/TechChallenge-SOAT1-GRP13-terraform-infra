@@ -1,9 +1,11 @@
-import { DynamoDBClient, GetItemCommand, UpdateItemCommand } from "@aws-sdk/client-dynamodb";
-import { unmarshall } from "@aws-sdk/util-dynamodb";
+import { DynamoDBClient, GetItemCommand } from "@aws-sdk/client-dynamodb";
 
 const client = new DynamoDBClient({ region: "us-west-2" });
 
 export const handler = async (event, context) => {
+    
+    console.log("chamou");
+    //console.log(event);
 
     // if(event.rawPath.includes('auth')){
     //     return generatePolicy('user', 'Allow', event.routeArn)
@@ -13,6 +15,7 @@ export const handler = async (event, context) => {
 
 
     if (exists) {
+        console.log("achou")
         return generatePolicy('user', 'Allow', event.routeArn)
     }
 
@@ -21,15 +24,22 @@ export const handler = async (event, context) => {
 
 function generatePolicy(principalId, effect, resource) {
     return {
-        'principalId': principalId,
-        'policyDocument': {
-            'Version': '2012-10-17',
-            'Statement': [{
-                'Action': 'execute-api:Invoke',
-                'Effect': effect,
-                'Resource': resource
-            }]
-        }
+      "principalId": principalId, // The principal user identification associated with the token sent by the client.
+      "policyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [{
+          "Action": "execute-api:Invoke",
+          "Effect": effect,
+          "Resource": resource
+        }]
+      },
+      "context": {
+        "stringKey": "value",
+        "numberKey": 1,
+        "booleanKey": true,
+        "arrayKey": ["value1", "value2"],
+        "mapKey": { "value1": "value2" }
+      }
     };
 }
 

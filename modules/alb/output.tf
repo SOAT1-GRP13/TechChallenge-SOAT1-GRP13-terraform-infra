@@ -27,6 +27,11 @@ output "lb_target_group_produto_arn" {
   value       = aws_lb_target_group.produto.arn
 }
 
+output "lb_target_group_auth_arn" {
+  description = "arn auth target group"
+  value       = aws_lb_target_group.auth.arn
+}
+
 output "listener_arn" {
   description = "arn of alb listener"
   value = aws_lb_listener.this.arn

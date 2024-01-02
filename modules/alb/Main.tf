@@ -123,6 +123,20 @@ resource "aws_lb_target_group" "produto" {
   depends_on = [aws_lb.this]
 }
 
+resource "aws_lb_target_group" "auth" {
+  name        = "auth-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/health"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
 ################################################################################
 # Listener
 ################################################################################
@@ -135,6 +149,21 @@ resource "aws_lb_listener" "this" {
   default_action {
     target_group_arn = aws_lb_target_group.producao.arn
     type             = "forward"
+  }
+}
+
+resource "aws_lb_listener_rule" "auth" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.auth.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/auth/*"]
+    }
   }
 }
 
@@ -193,7 +222,7 @@ resource "aws_lb_listener_rule" "produto" {
 
   condition {
     path_pattern {
-      values = ["/catalogo/*"]
+      values = ["/produto/*"]
     }
   }
 }
