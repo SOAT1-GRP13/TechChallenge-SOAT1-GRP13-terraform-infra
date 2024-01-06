@@ -70,6 +70,12 @@ data "aws_iam_policy_document" "task_exec" {
     actions   = ["secretsmanager:GetSecretValue"]
     resources = ["*"]
   }
+
+  statement {
+    sid = "dynamoDb"
+    actions = ["dynamodb:*"]
+    resources = [var.dynamo_arn]
+  }
 }
 
 resource "aws_iam_policy" "policy" {
@@ -102,7 +108,7 @@ resource "aws_security_group" "ecs_sg" {
 resource "aws_ecs_task_definition" "pedido" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.7",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.20",
     name      = "pedido-api",
     portMappings = [
       {
@@ -168,7 +174,7 @@ resource "aws_ecs_task_definition" "producao" {
 resource "aws_ecs_task_definition" "produto" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-produto:V1.0.13",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-produto:V1.0.21",
     name      = "produto-api",
     portMappings = [
       {
@@ -190,7 +196,7 @@ resource "aws_ecs_task_definition" "produto" {
 resource "aws_ecs_task_definition" "auth" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.6",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.9",
     name      = "auth-api",
     portMappings = [
       {

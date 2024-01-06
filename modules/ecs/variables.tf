@@ -2,6 +2,10 @@
 #   description = "List of SecretsManager secret ARNs the task execution role will be permitted to get/read"
 # }
 
+variable "dynamo_arn" {
+  description = "arn of dynamoDB"
+}
+
 variable "lb_target_group_pedido_arn" {
   description = "arn pedido target group"
 }

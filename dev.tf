@@ -90,6 +90,7 @@ module "ecs" {
   lb_target_group_produto_arn   = module.alb.lb_target_group_produto_arn
   lb_target_group_auth_arn      = module.alb.lb_target_group_auth_arn
   vpc_id                        = module.networking.vpc_id
+  dynamo_arn                    = module.databases.dynamo_arn
 }
 
 output "alb-dns" {
