@@ -22,3 +22,11 @@ variable "environment" {
 variable "vpc_id" {
   type = string
 }
+
+variable "bastion_security_group" {
+  description = "security group of EC2 bastion host"
+}
+
+variable "ecs_security_group" {
+  description = "security group of ecs"
+}

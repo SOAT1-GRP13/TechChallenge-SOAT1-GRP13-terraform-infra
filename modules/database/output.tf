@@ -29,3 +29,8 @@ output "db_instance_port" {
   value       = try(aws_db_instance.postgresql_db.port, null)
 }
 
+output "dynamo_arn" {
+  description = "the dynamoDB arn"
+  value       = aws_dynamodb_table.loggedUsers.arn
+}
+
