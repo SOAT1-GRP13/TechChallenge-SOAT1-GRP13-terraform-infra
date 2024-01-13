@@ -108,7 +108,7 @@ resource "aws_security_group" "ecs_sg" {
 resource "aws_ecs_task_definition" "pedido" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.20",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.23",
     name      = "pedido-api",
     portMappings = [
       {
@@ -130,7 +130,7 @@ resource "aws_ecs_task_definition" "pedido" {
 resource "aws_ecs_task_definition" "pagamento" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.11",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.16",
     name      = "pagamento-api",
     portMappings = [
       {
@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "pagamento" {
 resource "aws_ecs_task_definition" "producao" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.2",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.6",
     name      = "producao-api",
     portMappings = [
       {
@@ -174,7 +174,7 @@ resource "aws_ecs_task_definition" "producao" {
 resource "aws_ecs_task_definition" "produto" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-produto:V1.0.21",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-produto:V1.0.28",
     name      = "produto-api",
     portMappings = [
       {
@@ -196,7 +196,7 @@ resource "aws_ecs_task_definition" "produto" {
 resource "aws_ecs_task_definition" "auth" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.9",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.12",
     name      = "auth-api",
     portMappings = [
       {
