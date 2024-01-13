@@ -84,8 +84,7 @@ resource "aws_apigatewayv2_route" "pedido_route" {
 
 resource "aws_apigatewayv2_route" "pagamento_route" {
   api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
-  authorizer_id      = aws_apigatewayv2_authorizer.apigw_authorizer.id
-  authorization_type = "CUSTOM"
+  authorization_type = "NONE"
   route_key          = "ANY /pagamento/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
   depends_on         = [aws_apigatewayv2_integration.apigw_integration, aws_apigatewayv2_authorizer.apigw_authorizer]

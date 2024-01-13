@@ -31,7 +31,7 @@ resource "aws_eip" "ec2-bastion-host-eip" {
 
 ## EC2 Bastion Host
 resource "aws_instance" "ec2-bastion-host" {
-  ami                         = "ami-09ac7e749b0a8d2a1"
+  ami                         = "ami-0944e91aed79c721c"
   instance_type               = "t3a.micro"
   key_name                    = "pos-fiap"
   vpc_security_group_ids      = [aws_security_group.ec2-bastion-sg.id]
