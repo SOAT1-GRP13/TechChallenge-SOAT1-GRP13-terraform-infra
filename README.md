@@ -68,7 +68,7 @@ License: [MIT](License.txt)
 
 # Desenho da infraestrutura
 
-![Infraestrutura na AWS](https://imgur.com/a/Zs5rwVe.png)
+![Infraestrutura na AWS](<Infra.png>)
 
 # ✔️ Tecnologias utilizadas
 
