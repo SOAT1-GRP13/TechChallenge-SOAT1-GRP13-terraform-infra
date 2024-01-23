@@ -25,6 +25,13 @@ Este módulo é responsável por configurar o ambiente de banco de dados, que in
 - **RDS com PostgreSQL**: Configuração do banco de dados PostgreSQL.
 - **DynamoDB**: Nosso banco de dados NoSQL, que oferece alta escalabilidade e desempenho.
 
+**Módulo bastion**
+
+Aqui criamos uma instancia EC2 para servir de "jump server" nos permitindo conectar no banco de dados que está numa rede privada
+
+**Módulo lambda**
+
+Aqui criamos uma lambda function que serve como lambda authorizer para nosso api gateway
 
 **Módulo S3**
 
@@ -61,7 +68,7 @@ License: [MIT](License.txt)
 
 # Desenho da infraestrutura
 
-![Infraestrutura na AWS](https://i.imgur.com/crdKtp8.png)
+![Infraestrutura na AWS](https://imgur.com/a/Zs5rwVe)
 
 # ✔️ Tecnologias utilizadas
 
