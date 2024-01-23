@@ -1,20 +1,15 @@
 /*=============RDS=================*/
+
 resource "aws_security_group" "rds-postgres-sg" {
   name        = "rds-postgres-sg-${var.environment}"
   description = "Security group for RDS Postgres"
   vpc_id      = var.vpc_id
   ingress {
-    description = "Postgres port"
-    from_port   = 5432
-    to_port     = 5432
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] //LIberando todos os IPs para permitir o teste mas o correto seria liberar apenas o IP de quem for utilizar
-  }
-  egress {
-    from_port   = "0"
-    to_port     = "0"
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description     = "Postgres port"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = ["${var.bastion_security_group}", "${var.ecs_security_group}"]
   }
   tags = {
     Name        = "Security-group-RDS"
@@ -44,10 +39,10 @@ resource "aws_db_instance" "postgresql_db" {
 }
 
 /*=============DynamoDB=================*/
-resource "aws_dynamodb_table" "customer_db" {
-  name                        = "customers_cache"
+resource "aws_dynamodb_table" "loggedUsers" {
+  name                        = "usuariosLogados"
   billing_mode                = "PAY_PER_REQUEST"
-  hash_key                    = "userId"
+  hash_key                    = "token"
   stream_enabled              = false
   table_class                 = "STANDARD"
   deletion_protection_enabled = false
@@ -59,7 +54,7 @@ resource "aws_dynamodb_table" "customer_db" {
 
 
   attribute {
-    name = "userId"
+    name = "token"
     type = "S"
   }
 
@@ -68,7 +63,36 @@ resource "aws_dynamodb_table" "customer_db" {
   }
 
   tags = {
-    Name        = "DynamoDB"
+    Name        = "DynamoDB-usuarios"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_dynamodb_table" "pedidos" {
+  name                        = "pedidosPagos"
+  billing_mode                = "PAY_PER_REQUEST"
+  hash_key                    = "pedidoId"
+  stream_enabled              = false
+  table_class                 = "STANDARD"
+  deletion_protection_enabled = false
+
+  ttl {
+    enabled        = true
+    attribute_name = "ttl"
+  }
+
+
+  attribute {
+    name = "pedidoId"
+    type = "S"
+  }
+
+  server_side_encryption {
+    enabled = true
+  }
+
+  tags = {
+    Name        = "DynamoDB-usuarios"
     Environment = "${var.environment}"
   }
 }

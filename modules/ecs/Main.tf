@@ -60,6 +60,7 @@ data "aws_iam_policy_document" "task_exec" {
     actions = [
       "logs:CreateLogStream",
       "logs:PutLogEvents",
+      "logs:CreateLogGroup"
     ]
     resources = ["*"]
   }
@@ -67,7 +68,13 @@ data "aws_iam_policy_document" "task_exec" {
   statement {
     sid       = "GetSecrets"
     actions   = ["secretsmanager:GetSecretValue"]
-    resources = [var.task_exec_secret_arns]
+    resources = ["*"]
+  }
+
+  statement {
+    sid = "dynamoDb"
+    actions = ["dynamodb:*"]
+    resources = [var.dynamo_arn]
   }
 }
 
@@ -82,14 +89,27 @@ resource "aws_iam_role_policy_attachment" "task_exec_additional" {
 }
 
 ################################################################################
+# Security Group
+################################################################################
+
+resource "aws_security_group" "ecs_sg" {
+  name        = "ecs_sg"
+  description = "Security group to reference em RDS"
+  vpc_id      = var.vpc_id
+  tags = {
+    Name = "ecs_sg"
+  }
+}
+
+################################################################################
 # Task Definition
 ################################################################################
 
-resource "aws_ecs_task_definition" "this" {
+resource "aws_ecs_task_definition" "pedido" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13:latest",
-    name      = "soat1-grp13-api",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.27",
+    name      = "pedido-api",
     portMappings = [
       {
         containerPort = 80
@@ -101,39 +121,240 @@ resource "aws_ecs_task_definition" "this" {
   cpu                      = 256
   execution_role_arn       = aws_iam_role.task_exec.arn
   task_role_arn            = aws_iam_role.task_exec.arn
-  family                   = "soat1-grp13-api"
+  family                   = "pedido-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
+resource "aws_ecs_task_definition" "pagamento" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.19",
+    name      = "pagamento-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "pagamento-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
+resource "aws_ecs_task_definition" "producao" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.9",
+    name      = "producao-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "producao-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
+resource "aws_ecs_task_definition" "produto" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13-produto:V1.0.35",
+    name      = "produto-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "produto-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
+resource "aws_ecs_task_definition" "auth" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.16",
+    name      = "auth-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "auth-api"
   memory                   = 512
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
 }
 
 ################################################################################
-# Task Definition
+# services
 ################################################################################
 
-resource "aws_ecs_service" "this" {
+resource "aws_ecs_service" "pedido" {
   cluster         = aws_ecs_cluster.this.id
   desired_count   = 1
   launch_type     = "FARGATE"
-  name            = "soat1-grp13-service"
-  task_definition = aws_ecs_task_definition.this.arn
+  name            = "pedido-service"
+  task_definition = aws_ecs_task_definition.pedido.arn
 
   lifecycle {
     ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
   }
 
   load_balancer {
-    container_name   = "soat1-grp13-api"
+    container_name   = "pedido-api"
     container_port   = 80
-    target_group_arn = var.lb_target_group_arn
+    target_group_arn = var.lb_target_group_pedido_arn
   }
 
   network_configuration {
     security_groups = [
       "${var.lb_engress_id}",
-      "${var.lb_ingress_id}"
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
     ]
-    subnets          = var.public_subnets_id
-    assign_public_ip = true
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "pagamento" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "pagamento-service"
+  task_definition = aws_ecs_task_definition.pagamento.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "pagamento-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_pagamento_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "producao" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "producao-service"
+  task_definition = aws_ecs_task_definition.producao.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "producao-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_producao_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "produto" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "produto-service"
+  task_definition = aws_ecs_task_definition.produto.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "produto-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_produto_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "auth" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "auth-service"
+  task_definition = aws_ecs_task_definition.auth.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "auth-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_auth_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
   }
 }

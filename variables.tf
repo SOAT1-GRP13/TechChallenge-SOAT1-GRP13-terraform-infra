@@ -14,6 +14,8 @@ variable "secret_key" {
   description = "AWS secret key to create resources"
 }
 
+
+# #Usar quando for rodar local
 # variable "profile" {
 #   description = "AWS profile to create resources used locally"
 # }
