@@ -81,6 +81,34 @@ resource "aws_lb_target_group" "pedido" {
   depends_on = [aws_lb.this]
 }
 
+resource "aws_lb_target_group" "rabbitmq" {
+  name        = "rabbitmq-tg"
+  port        = 5672
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
+resource "aws_lb_target_group" "rabbitqmq_management" {
+  name        = "rabbitqmq-management-tg"
+  port        = 15672
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
 resource "aws_lb_target_group" "pagamento" {
   name        = "pagamento-tg"
   port        = 80
@@ -163,6 +191,36 @@ resource "aws_lb_listener_rule" "auth" {
   condition {
     path_pattern {
       values = ["/auth/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "rabbitqmq_management" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.rabbitqmq_management.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/rabbitmanagement/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "rabbitmq" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.rabbitmq.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/rabbit/*"]
     }
   }
 }

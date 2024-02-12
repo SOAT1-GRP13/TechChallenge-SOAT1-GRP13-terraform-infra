@@ -72,8 +72,8 @@ data "aws_iam_policy_document" "task_exec" {
   }
 
   statement {
-    sid = "dynamoDb"
-    actions = ["dynamodb:*"]
+    sid       = "dynamoDb"
+    actions   = ["dynamodb:*"]
     resources = [var.dynamo_arn]
   }
 }
@@ -215,6 +215,40 @@ resource "aws_ecs_task_definition" "auth" {
   requires_compatibilities = ["FARGATE"]
 }
 
+resource "aws_ecs_task_definition" "rabbitMQ" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "rabbitmq:3-management",
+    name      = "rabbitmq-api",
+    portMappings = [
+      {
+        containerPort = 5672
+        hostPort      = 5672
+        appProtocol   = "http"
+        protocol      = "tcp"
+      },
+      {
+        containerPort = 15672
+        hostPort      = 15672
+        appProtocol   = "http"
+        protocol      = "tcp"
+      }
+    ],
+    //TODO passar isso para secrets do github actions
+    environment = [
+      {"name": "RABBITMQ_DEFAULT_USER", "value": "user"},
+      {"name": "RABBITMQ_DEFAULT_PASS", "value": "password"}
+    ]
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "rabbitmq-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
 ################################################################################
 # services
 ################################################################################
@@ -234,6 +268,39 @@ resource "aws_ecs_service" "pedido" {
     container_name   = "pedido-api"
     container_port   = 80
     target_group_arn = var.lb_target_group_pedido_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "rabbitmq" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "rabbitmq-service"
+  task_definition = aws_ecs_task_definition.pedido.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "rabbitmq-api"
+    container_port   = 5672
+    target_group_arn = var.lb_target_group_rabbit_arn
+  }
+    load_balancer {
+    container_name   = "rabbitmq-api"
+    container_port   = 15672
+    target_group_arn = var.lb_target_group_rabbit_management_arn
   }
 
   network_configuration {

@@ -10,6 +10,14 @@ variable "lb_target_group_pedido_arn" {
   description = "arn pedido target group"
 }
 
+variable "lb_target_group_rabbit_management_arn" {
+  description = "arn rabbit management target group"
+}
+
+variable "lb_target_group_rabbit_arn" {
+  description = "arn rabbitmq target group"
+}
+
 variable "lb_target_group_pagamento_arn" {
   description = "arn pagamento target group"
 }

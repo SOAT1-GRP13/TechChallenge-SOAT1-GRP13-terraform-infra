@@ -32,6 +32,16 @@ output "lb_target_group_auth_arn" {
   value       = aws_lb_target_group.auth.arn
 }
 
+output "lb_target_group_rabbit_arn" {
+  description = "arn rabbitmq target group"
+  value       = aws_lb_target_group.rabbitmq.arn
+}
+
+output "lb_target_group_rabbit_management_arn" {
+  description = "arn rabbitmqmanagement target group"
+  value       = aws_lb_target_group.rabbitqmq_management.arn
+}
+
 output "listener_arn" {
   description = "arn of alb listener"
   value = aws_lb_listener.this.arn
