@@ -46,6 +46,18 @@ resource "aws_security_group" "ingress_api" {
     protocol    = "TCP"
     to_port     = 80
   }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 5672
+    protocol    = "TCP"
+    to_port     = 5672
+  }
+    ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 15672
+    protocol    = "TCP"
+    to_port     = 15672
+  }
 }
 
 resource "aws_lb" "this" {
@@ -89,7 +101,8 @@ resource "aws_lb_target_group" "rabbitmq" {
   vpc_id      = var.vpc_id
 
   health_check {
-    path = "/"
+    path = "/rabbitmanagement"
+    port = 15672
   }
 
   depends_on = [aws_lb.this]
@@ -103,7 +116,7 @@ resource "aws_lb_target_group" "rabbitqmq_management" {
   vpc_id      = var.vpc_id
 
   health_check {
-    path = "/"
+    path = "/rabbitmanagement"
   }
 
   depends_on = [aws_lb.this]

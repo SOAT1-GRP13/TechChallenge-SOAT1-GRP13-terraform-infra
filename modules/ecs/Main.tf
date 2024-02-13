@@ -237,7 +237,9 @@ resource "aws_ecs_task_definition" "rabbitMQ" {
     //TODO passar isso para secrets do github actions
     environment = [
       {"name": "RABBITMQ_DEFAULT_USER", "value": "user"},
-      {"name": "RABBITMQ_DEFAULT_PASS", "value": "password"}
+      {"name": "RABBITMQ_DEFAULT_PASS", "value": "password"},
+      {"name": "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS", "value": "-rabbitmq_management path_prefix \"/rabbitmanagement\""},
+      {"name": "RABBITMQ_DEFAULT_VHOST", "value": "/rabbit"}
     ]
   }])
   cpu                      = 256
@@ -286,7 +288,7 @@ resource "aws_ecs_service" "rabbitmq" {
   desired_count   = 1
   launch_type     = "FARGATE"
   name            = "rabbitmq-service"
-  task_definition = aws_ecs_task_definition.pedido.arn
+  task_definition = aws_ecs_task_definition.rabbitMQ.arn
 
   lifecycle {
     ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
