@@ -69,6 +69,7 @@ resource "aws_lb" "this" {
     aws_security_group.egress_all.id,
     aws_security_group.http.id,
     aws_security_group.https.id,
+    aws_security_group.ingress_api.id
   ]
 
   subnets = var.privates_subnets_id
@@ -193,6 +194,17 @@ resource "aws_lb_listener" "this" {
   }
 }
 
+resource "aws_lb_listener" "rabbit" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 5672
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.rabbitmq.arn
+    type             = "forward"
+  }
+}
+
 resource "aws_lb_listener_rule" "auth" {
   listener_arn = aws_lb_listener.this.arn
 
@@ -219,21 +231,6 @@ resource "aws_lb_listener_rule" "rabbitqmq_management" {
   condition {
     path_pattern {
       values = ["/rabbitmanagement/*"]
-    }
-  }
-}
-
-resource "aws_lb_listener_rule" "rabbitmq" {
-  listener_arn = aws_lb_listener.this.arn
-
-  action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.rabbitmq.arn
-  }
-
-  condition {
-    path_pattern {
-      values = ["/rabbit/*"]
     }
   }
 }
