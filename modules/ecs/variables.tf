@@ -6,6 +6,10 @@ variable "dynamo_arn" {
   description = "arn of dynamoDB"
 }
 
+variable "dynamo_pedidos_arn" {
+  description = "arn of dynamoDB pedidosQR"
+}
+
 variable "lb_target_group_pedido_arn" {
   description = "arn pedido target group"
 }

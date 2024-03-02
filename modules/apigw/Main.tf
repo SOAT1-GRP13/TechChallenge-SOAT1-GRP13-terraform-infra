@@ -48,6 +48,7 @@ resource "aws_apigatewayv2_authorizer" "apigw_authorizer" {
   identity_sources                  = ["$request.header.Authorization"]
   name                              = "techchallenge-authorizer"
   authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0 
 }
 
 resource "aws_lambda_permission" "my_authorizer_lambda_permission" {

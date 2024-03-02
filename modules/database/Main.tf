@@ -69,7 +69,7 @@ resource "aws_dynamodb_table" "loggedUsers" {
 }
 
 resource "aws_dynamodb_table" "pedidos" {
-  name                        = "pedidosPagos"
+  name                        = "PedidosQR"
   billing_mode                = "PAY_PER_REQUEST"
   hash_key                    = "pedidoId"
   stream_enabled              = false
@@ -92,7 +92,7 @@ resource "aws_dynamodb_table" "pedidos" {
   }
 
   tags = {
-    Name        = "DynamoDB-usuarios"
+    Name        = "DynamoDB-PedidosQR"
     Environment = "${var.environment}"
   }
 }

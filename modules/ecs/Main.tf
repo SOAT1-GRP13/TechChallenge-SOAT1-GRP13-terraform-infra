@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "task_exec" {
   statement {
     sid       = "dynamoDb"
     actions   = ["dynamodb:*"]
-    resources = [var.dynamo_arn]
+    resources = [var.dynamo_arn, var.dynamo_pedidos_arn]
   }
 }
 
@@ -108,7 +108,7 @@ resource "aws_security_group" "ecs_sg" {
 resource "aws_ecs_task_definition" "pedido" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.34",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.36",
     name      = "pedido-api",
     portMappings = [
       {
@@ -130,7 +130,7 @@ resource "aws_ecs_task_definition" "pedido" {
 resource "aws_ecs_task_definition" "pagamento" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.31",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.34",
     name      = "pagamento-api",
     portMappings = [
       {
@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "pagamento" {
 resource "aws_ecs_task_definition" "producao" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.19",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.21",
     name      = "producao-api",
     portMappings = [
       {
