@@ -22,3 +22,8 @@ resource "aws_secretsmanager_secret" "pedido" {
   name = "pedido-secret"
   recovery_window_in_days = 0
 }
+
+resource "aws_secretsmanager_secret" "notificacao" {
+  name = "notificacao-secret"
+  recovery_window_in_days = 0
+}

@@ -108,6 +108,14 @@ resource "aws_apigatewayv2_route" "auth_route" {
   depends_on         = [aws_apigatewayv2_integration.apigw_integration]
 }
 
+resource "aws_apigatewayv2_route" "notificacao_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorization_type = "NONE"
+  route_key          = "ANY /notificacao/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration]
+}
+
 resource "aws_apigatewayv2_route" "rabbit_route" {
   api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
   authorization_type = "NONE"

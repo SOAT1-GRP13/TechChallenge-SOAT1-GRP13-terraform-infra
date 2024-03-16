@@ -108,7 +108,7 @@ resource "aws_security_group" "ecs_sg" {
 resource "aws_ecs_task_definition" "pedido" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.36",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pedido:V1.0.37",
     name      = "pedido-api",
     portMappings = [
       {
@@ -130,7 +130,7 @@ resource "aws_ecs_task_definition" "pedido" {
 resource "aws_ecs_task_definition" "pagamento" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.34",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-pagamento:V1.0.36",
     name      = "pagamento-api",
     portMappings = [
       {
@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "pagamento" {
 resource "aws_ecs_task_definition" "producao" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.21",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-producao:V1.0.23",
     name      = "producao-api",
     portMappings = [
       {
@@ -196,7 +196,7 @@ resource "aws_ecs_task_definition" "produto" {
 resource "aws_ecs_task_definition" "auth" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.18",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-auth:V1.0.22",
     name      = "auth-api",
     portMappings = [
       {
@@ -210,6 +210,28 @@ resource "aws_ecs_task_definition" "auth" {
   execution_role_arn       = aws_iam_role.task_exec.arn
   task_role_arn            = aws_iam_role.task_exec.arn
   family                   = "auth-api"
+  memory                   = 512
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+}
+
+resource "aws_ecs_task_definition" "notificacao" {
+  container_definitions = jsonencode([{
+    essential = true,
+    image     = "christiandmelo/tech-challenge-soat1-grp13-notificacao:V1.0.3",
+    name      = "notificacao-api",
+    portMappings = [
+      {
+        containerPort = 80
+        hostPort      = 80
+        appProtocol   = "http"
+        protocol      = "tcp"
+    }],
+  }])
+  cpu                      = 256
+  execution_role_arn       = aws_iam_role.task_exec.arn
+  task_role_arn            = aws_iam_role.task_exec.arn
+  family                   = "notificacao-api"
   memory                   = 512
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -415,6 +437,34 @@ resource "aws_ecs_service" "auth" {
     container_name   = "auth-api"
     container_port   = 80
     target_group_arn = var.lb_target_group_auth_arn
+  }
+
+  network_configuration {
+    security_groups = [
+      "${var.lb_engress_id}",
+      "${var.lb_ingress_id}",
+      aws_security_group.ecs_sg.id
+    ]
+    subnets          = var.privates_subnets_id
+    assign_public_ip = false
+  }
+}
+
+resource "aws_ecs_service" "notificacao" {
+  cluster         = aws_ecs_cluster.this.id
+  desired_count   = 1
+  launch_type     = "FARGATE"
+  name            = "notificacao-service"
+  task_definition = aws_ecs_task_definition.notificacao.arn
+
+  lifecycle {
+    ignore_changes = [desired_count, task_definition] # Allow external changes to happen without Terraform conflicts, particularly around auto-scaling.
+  }
+
+  load_balancer {
+    container_name   = "notificacao-api"
+    container_port   = 80
+    target_group_arn = var.lb_target_group_notificacao_arn
   }
 
   network_configuration {

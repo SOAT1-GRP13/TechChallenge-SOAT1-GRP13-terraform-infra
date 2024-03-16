@@ -80,6 +80,20 @@ resource "aws_lb" "this" {
 # Target Groups
 ################################################################################
 
+resource "aws_lb_target_group" "notificacao" {
+  name        = "notificacao-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/health"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
 resource "aws_lb_target_group" "pedido" {
   name        = "pedido-tg"
   port        = 80
@@ -216,6 +230,21 @@ resource "aws_lb_listener_rule" "auth" {
   condition {
     path_pattern {
       values = ["/auth/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "notificacao" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.notificacao.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/notificacao/*"]
     }
   }
 }

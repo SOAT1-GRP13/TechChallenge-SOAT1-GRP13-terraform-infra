@@ -91,6 +91,7 @@ module "ecs" {
   lb_target_group_auth_arn              = module.alb.lb_target_group_auth_arn
   lb_target_group_rabbit_arn            = module.alb.lb_target_group_rabbit_arn
   lb_target_group_rabbit_management_arn = module.alb.lb_target_group_rabbit_management_arn
+  lb_target_group_notificacao_arn       = module.alb.lb_target_group_notificacao_arn
   vpc_id                                = module.networking.vpc_id
   dynamo_arn                            = module.databases.dynamo_arn
   dynamo_pedidos_arn                    = module.databases.dynamo_pedidos_arn

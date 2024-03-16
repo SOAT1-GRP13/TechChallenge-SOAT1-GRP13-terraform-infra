@@ -42,6 +42,11 @@ output "lb_target_group_rabbit_management_arn" {
   value       = aws_lb_target_group.rabbitqmq_management.arn
 }
 
+output "lb_target_group_notificacao_arn" {
+  description = "arn notificacao target group"
+  value       = aws_lb_target_group.notificacao.arn
+}
+
 output "listener_arn" {
   description = "arn of alb listener"
   value = aws_lb_listener.this.arn
