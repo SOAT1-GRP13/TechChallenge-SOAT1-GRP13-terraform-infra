@@ -218,7 +218,7 @@ resource "aws_ecs_task_definition" "auth" {
 resource "aws_ecs_task_definition" "notificacao" {
   container_definitions = jsonencode([{
     essential = true,
-    image     = "christiandmelo/tech-challenge-soat1-grp13-notificacao:V1.0.3",
+    image     = "christiandmelo/tech-challenge-soat1-grp13-notificacao:V1.0.6",
     name      = "notificacao-api",
     portMappings = [
       {
