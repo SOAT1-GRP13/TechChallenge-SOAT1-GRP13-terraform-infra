@@ -6,8 +6,20 @@ variable "dynamo_arn" {
   description = "arn of dynamoDB"
 }
 
+variable "dynamo_pedidos_arn" {
+  description = "arn of dynamoDB pedidosQR"
+}
+
 variable "lb_target_group_pedido_arn" {
   description = "arn pedido target group"
+}
+
+variable "lb_target_group_rabbit_management_arn" {
+  description = "arn rabbit management target group"
+}
+
+variable "lb_target_group_rabbit_arn" {
+  description = "arn rabbitmq target group"
 }
 
 variable "lb_target_group_pagamento_arn" {
@@ -25,6 +37,11 @@ variable "lb_target_group_produto_arn" {
 variable "lb_target_group_auth_arn" {
   description = "arn auth target group"
 }
+
+variable "lb_target_group_notificacao_arn" {
+  description = "arn notificacao target group"
+}
+
 
 variable "lb_engress_id" {
   description = "Id of engress sg"

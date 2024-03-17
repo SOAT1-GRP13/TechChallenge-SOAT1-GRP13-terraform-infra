@@ -34,3 +34,7 @@ output "dynamo_arn" {
   value       = aws_dynamodb_table.loggedUsers.arn
 }
 
+output "dynamo_pedidos_arn" {
+  description = "the dynamoDB arn"
+  value       = aws_dynamodb_table.pedidos.arn
+}

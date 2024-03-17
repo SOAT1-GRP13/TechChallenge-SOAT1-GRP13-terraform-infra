@@ -48,6 +48,7 @@ resource "aws_apigatewayv2_authorizer" "apigw_authorizer" {
   identity_sources                  = ["$request.header.Authorization"]
   name                              = "techchallenge-authorizer"
   authorizer_payload_format_version = "2.0"
+  authorizer_result_ttl_in_seconds  = 0 
 }
 
 resource "aws_lambda_permission" "my_authorizer_lambda_permission" {
@@ -103,6 +104,22 @@ resource "aws_apigatewayv2_route" "auth_route" {
   api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
   authorization_type = "NONE"
   route_key          = "ANY /auth/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration]
+}
+
+resource "aws_apigatewayv2_route" "notificacao_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorization_type = "NONE"
+  route_key          = "ANY /notificacao/{proxy+}"
+  target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
+  depends_on         = [aws_apigatewayv2_integration.apigw_integration]
+}
+
+resource "aws_apigatewayv2_route" "rabbit_route" {
+  api_id             = aws_apigatewayv2_api.apigw_http_endpoint.id
+  authorization_type = "NONE"
+  route_key          = "ANY /rabbitmanagement/{proxy+}"
   target             = "integrations/${aws_apigatewayv2_integration.apigw_integration.id}"
   depends_on         = [aws_apigatewayv2_integration.apigw_integration]
 }
