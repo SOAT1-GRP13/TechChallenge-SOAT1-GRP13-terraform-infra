@@ -46,6 +46,18 @@ resource "aws_security_group" "ingress_api" {
     protocol    = "TCP"
     to_port     = 80
   }
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 5672
+    protocol    = "TCP"
+    to_port     = 5672
+  }
+    ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    from_port   = 15672
+    protocol    = "TCP"
+    to_port     = 15672
+  }
 }
 
 resource "aws_lb" "this" {
@@ -57,6 +69,7 @@ resource "aws_lb" "this" {
     aws_security_group.egress_all.id,
     aws_security_group.http.id,
     aws_security_group.https.id,
+    aws_security_group.ingress_api.id
   ]
 
   subnets = var.privates_subnets_id
@@ -67,6 +80,20 @@ resource "aws_lb" "this" {
 # Target Groups
 ################################################################################
 
+resource "aws_lb_target_group" "notificacao" {
+  name        = "notificacao-tg"
+  port        = 80
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/health"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
 resource "aws_lb_target_group" "pedido" {
   name        = "pedido-tg"
   port        = 80
@@ -76,6 +103,35 @@ resource "aws_lb_target_group" "pedido" {
 
   health_check {
     path = "/health"
+  }
+
+  depends_on = [aws_lb.this]
+}
+
+resource "aws_lb_target_group" "rabbitmq" {
+  name        = "rabbitmq-tg"
+  port        = 5672
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/rabbitmanagement"
+    port = 15672
+  }
+
+  depends_on = [aws_lb.this]
+}
+
+resource "aws_lb_target_group" "rabbitqmq_management" {
+  name        = "rabbitqmq-management-tg"
+  port        = 15672
+  protocol    = "HTTP"
+  target_type = "ip"
+  vpc_id      = var.vpc_id
+
+  health_check {
+    path = "/rabbitmanagement"
   }
 
   depends_on = [aws_lb.this]
@@ -152,6 +208,17 @@ resource "aws_lb_listener" "this" {
   }
 }
 
+resource "aws_lb_listener" "rabbit" {
+  load_balancer_arn = aws_lb.this.arn
+  port              = 5672
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_lb_target_group.rabbitmq.arn
+    type             = "forward"
+  }
+}
+
 resource "aws_lb_listener_rule" "auth" {
   listener_arn = aws_lb_listener.this.arn
 
@@ -163,6 +230,36 @@ resource "aws_lb_listener_rule" "auth" {
   condition {
     path_pattern {
       values = ["/auth/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "notificacao" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.notificacao.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/notificacao/*"]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "rabbitqmq_management" {
+  listener_arn = aws_lb_listener.this.arn
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.rabbitqmq_management.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/rabbitmanagement/*"]
     }
   }
 }

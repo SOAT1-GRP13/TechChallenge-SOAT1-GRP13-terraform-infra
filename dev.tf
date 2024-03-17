@@ -82,15 +82,19 @@ module "ecs" {
 
   privates_subnets_id = module.networking.private_subnet_id
   # task_exec_secret_arns         = module.secrets.aws_secretsmanager_secret_arn
-  lb_engress_id                 = module.alb.egress_all_id
-  lb_ingress_id                 = module.alb.ingress_api_id
-  lb_target_group_pagamento_arn = module.alb.lb_target_group_pagamento_arn
-  lb_target_group_pedido_arn    = module.alb.lb_target_group_pedido_arn
-  lb_target_group_producao_arn  = module.alb.lb_target_group_producao_arn
-  lb_target_group_produto_arn   = module.alb.lb_target_group_produto_arn
-  lb_target_group_auth_arn      = module.alb.lb_target_group_auth_arn
-  vpc_id                        = module.networking.vpc_id
-  dynamo_arn                    = module.databases.dynamo_arn
+  lb_engress_id                         = module.alb.egress_all_id
+  lb_ingress_id                         = module.alb.ingress_api_id
+  lb_target_group_pagamento_arn         = module.alb.lb_target_group_pagamento_arn
+  lb_target_group_pedido_arn            = module.alb.lb_target_group_pedido_arn
+  lb_target_group_producao_arn          = module.alb.lb_target_group_producao_arn
+  lb_target_group_produto_arn           = module.alb.lb_target_group_produto_arn
+  lb_target_group_auth_arn              = module.alb.lb_target_group_auth_arn
+  lb_target_group_rabbit_arn            = module.alb.lb_target_group_rabbit_arn
+  lb_target_group_rabbit_management_arn = module.alb.lb_target_group_rabbit_management_arn
+  lb_target_group_notificacao_arn       = module.alb.lb_target_group_notificacao_arn
+  vpc_id                                = module.networking.vpc_id
+  dynamo_arn                            = module.databases.dynamo_arn
+  dynamo_pedidos_arn                    = module.databases.dynamo_pedidos_arn
 }
 
 output "alb-dns" {
