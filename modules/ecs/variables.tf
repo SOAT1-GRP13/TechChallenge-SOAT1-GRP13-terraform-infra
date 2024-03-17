@@ -58,3 +58,11 @@ variable "privates_subnets_id" {
 variable "vpc_id" {
   description = "id of vpc"
 }
+
+variable "rabbit_user" {
+  description = "User of rabbitMQ"
+}
+
+variable "rabbit_password" {
+  description = "Password of rabbitMQ"
+}
