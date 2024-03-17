@@ -35,6 +35,8 @@ jobs:
           secret_key= "${{secrets.SECRET_KEY}}"
           db_username="${{secrets.DB_USERNAME}}"
           db_password="${{secrets.DB_PASSWORD}}"
+          rabbit_user="${{secrets.RABBIT_USER}}"
+          rabbit_password="${{secrets.RABBIT_PASSWORD}}"
           environment="${{vars.ENVIRONMENT}}"
           region="${{vars.REGION}}"
           EOF

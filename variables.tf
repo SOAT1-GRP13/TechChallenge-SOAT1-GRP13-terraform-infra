@@ -14,6 +14,15 @@ variable "secret_key" {
   description = "AWS secret key to create resources"
 }
 
+variable "rabbit_user" {
+  description = "User of rabbitMQ"
+}
+
+variable "rabbit_password" {
+  description = "Password of rabbitMQ"
+}
+
+
 
 # #Usar quando for rodar local
 # variable "profile" {
