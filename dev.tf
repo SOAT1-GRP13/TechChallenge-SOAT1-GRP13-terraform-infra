@@ -79,8 +79,7 @@ module "apigw" {
 module "ecs" {
   source = "./modules/ecs"
 
-  privates_subnets_id = module.networking.private_subnet_id
-  # task_exec_secret_arns         = module.secrets.aws_secretsmanager_secret_arn
+  privates_subnets_id                   = module.networking.private_subnet_id
   lb_engress_id                         = module.alb.egress_all_id
   lb_ingress_id                         = module.alb.ingress_api_id
   lb_target_group_pagamento_arn         = module.alb.lb_target_group_pagamento_arn
@@ -94,6 +93,8 @@ module "ecs" {
   vpc_id                                = module.networking.vpc_id
   dynamo_arn                            = module.databases.dynamo_arn
   dynamo_pedidos_arn                    = module.databases.dynamo_pedidos_arn
+  rabbit_password                       = var.rabbit_password
+  rabbit_user                           = var.rabbit_user
 }
 
 output "alb-dns" {

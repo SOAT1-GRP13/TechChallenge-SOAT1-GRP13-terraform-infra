@@ -258,8 +258,8 @@ resource "aws_ecs_task_definition" "rabbitMQ" {
     ],
     //TODO passar isso para secrets do github actions
     environment = [
-      {"name": "RABBITMQ_DEFAULT_USER", "value": "user"},
-      {"name": "RABBITMQ_DEFAULT_PASS", "value": "password"},
+      {"name": "RABBITMQ_DEFAULT_USER", "value": var.rabbit_user},
+      {"name": "RABBITMQ_DEFAULT_PASS", "value": var.rabbit_password},
       {"name": "RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS", "value": "-rabbitmq_management path_prefix \"/rabbitmanagement\""},
       {"name": "RABBITMQ_DEFAULT_VHOST", "value": "/rabbit"}
     ]
